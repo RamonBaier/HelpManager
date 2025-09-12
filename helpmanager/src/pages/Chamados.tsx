@@ -4,8 +4,6 @@
 const Chamados = () => {
   return (
     <div className="flex h-screen bg-zinc-950 text-zinc-100">
-      {/* Sidebar */}
-      {/* <Sidebar /> */}
 
       {/* Conteúdo principal */}
       <div className="flex flex-col flex-1">
