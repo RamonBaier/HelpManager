@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function CreateHelpDialog() {
   const [categoriaGeral, setCategoriaGeral] = useState("");
   const [categoriaEspecifica, setCategoriaEspecifica] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const opcoesEspecificas: Record<string, string[]> = {
     Whatsapp: ["Erro de envio", "Sem conexão", "Outros"],
