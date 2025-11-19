@@ -1,13 +1,13 @@
+// src/components/CreateHelpDialog.tsx
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function CreateHelpDialog() {
-  // Estado para categorias
   const [categoriaGeral, setCategoriaGeral] = useState("");
   const [categoriaEspecifica, setCategoriaEspecifica] = useState("");
+  const [, setLoading] = useState(false);
 
-  // Opções dinâmicas de categorias específicas
   const opcoesEspecificas: Record<string, string[]> = {
     Whatsapp: ["Erro de envio", "Sem conexão", "Outros"],
     Site: ["Login", "Pagamentos", "Layout", "Outros"],
@@ -15,25 +15,53 @@ export default function CreateHelpDialog() {
     Outros: ["Diversos"],
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const form = e.currentTarget;
     const assunto = (form.elements.namedItem("assunto") as HTMLInputElement).value;
     const descricao = (form.elements.namedItem("descricao") as HTMLTextAreaElement).value;
 
-    // 🔴 Aqui, por enquanto, só mandamos pro console
-    console.log({
+    const payload = {
       assunto,
       descricao,
       categoriaGeral,
       categoriaEspecifica,
-    });
+    };
 
-    // Se quiser, você pode limpar os campos após salvar:
-    form.reset();
-    setCategoriaGeral("");
-    setCategoriaEspecifica("");
+    // 1) Console log local (para debug)
+    console.log("Enviando payload para o backend:", payload);
+
+    // 2) Enviar para o backend
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:8080/api/chamados", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // se futuramente usar auth: Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Erro ${res.status}: ${text}`);
+      }
+
+      const data = await res.json();
+      console.log("Resposta do backend:", data);
+
+      // opcional: limpar o form / fechar modal / disparar callback
+      form.reset();
+      setCategoriaGeral("");
+      setCategoriaEspecifica("");
+      // se quiser: fechar modal via state/props do Radix (ex: controlado)
+    } catch (err) {
+      console.error("Falha ao enviar chamado:", err);
+      alert("Erro ao criar chamado. Veja console para detalhes.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
